@@ -44,6 +44,9 @@ for letter in s1:
         out += letter
 prot1=out
 
+#print(prot)
+#print(prot1)
+
 #prot dict
 protDict = {
 "UUU":"F", "CUU":"L", "AUU":"I", "GUU":"V",
@@ -56,85 +59,88 @@ protDict = {
 "UCG":"S", "CCG":"P", "ACG":"T", "GCG":"A",
 "UAU":"Y", "CAU":"H", "AAU":"N", "GAU":"D",
 "UAC":"Y", "CAC":"H", "AAC":"N", "GAC":"D",
-"UAA":"Stop", "CAA":"Q", "AAA":"K", "GAA":"E",
-"UAG":"Stop", "CAG":"Q", "AAG":"K", "GAG":"E",
+"UAA":"*", "CAA":"Q", "AAA":"K", "GAA":"E",
+"UAG":"*", "CAG":"Q", "AAG":"K", "GAG":"E",
 "UGU":"C", "CGU":"R", "AGU":"S", "GGU":"G",
 "UGC":"C", "CGC":"R", "AGC":"S", "GGC":"G",
-"UGA":"Stop", "CGA":"R", "AGA":"R", "GGA":"G",
+"UGA":"*", "CGA":"R", "AGA":"R", "GGA":"G",
 "UGG":"W", "CGG":"R", "AGG":"R", "GGG":"G",
 }
 
 temp= ""
 output = []
+#TODO if not divisible by 3 then shift start of orf by extra
 
 #check len divisible by 3
 if len(prot)%3 != 0 or len(prot1)%3 != 0:
     print("Warning Sequence not divisible by 3!")
-    #print(len(prot)%3)
 
+#TODO 
+#cut last letter, but also start translating from 1/2 letters in 
 
-#TODO fix bug when not %3 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#translate to list of all 6 orf AA sequences
+def rna2prot(seq, rev):
+    o = []
+    #seq, and rev 3 times each with varied start
+    for j in range(3):
+        AAs = ""
+        AAr = ""
+        i = len(seq)%3
+        #print(j)
+        #print(i)
+        #print("seq" + seq)
+        #print("rev" + rev)
+        #print(len(seq))
+        while i+3 <= len(seq):
+            AAs += protDict[seq[i:i+3]]
+            AAr += protDict[rev[i:i+3]]
+            i += 3
+        #print(AAs)
+        o.append(AAs)
+        o.append(AAr)
+        seq = seq[:-1]
+        rev = rev[:-1]
+    return o
 
+#print(prot)
+#print(prot1)
+rnaprot = rna2prot(prot, prot1)
+#print(rnaprot)
 
-#translate at different starts regular
-j = 0
-start=False
-while j < 3:
-    i = j
-    while i < len(prot):
-        if prot[i:i+3] in protDict:
-            if not start:
-                if protDict[prot[i:i+3]] == "M":
-                    start=True
-                    print("START Found", i)
-                else:
-                    i+=3
-            else:
-                if protDict[prot[i:i+3]] == "Stop":
-                    print("STOP Found", i)
-                    start=False
-                    output.append(temp)
-                    temp=""
-                else:
-                    temp += protDict[prot[i:i+3]]
-                    #print(protDict[prot[i:i+3]], end = "")
-                i+=3     
+#for each orf get M-* for each M-* combination, if not * then not a combination 
+
+def orf_iter(seq):
+    s = ""
+    start = False
+    #loop through seq
+    #print(seq)
+    l = 0
+    while l < len(seq):
+        #if M found start
+        if not start:
+            if seq[l] == "M":
+                start = True
+                s += "M"
+                l += 1
+                prev = l
+            else :
+                l += 1
         else:
-            print(prot[i:i+3])
-            print(i)
-            print(len(prot))
-            print("error seq not recognized")
-    j+=1
-    start=False
-    output.append(temp)
-    temp=""
-
-#translate at different starts reverse
-j = 0
-while j < 3:
-    i = j
-    while i < len(prot1):
-        if prot1[i:i+3] in protDict:
-            if not start:
-                if protDict[prot[i:i+3]] == "M":
-                    start=True
-                else:
-                    i+=3
-                    continue 
-            
-            if protDict[prot1[i:i+3]] == "Stop":
-                print("", end = "")
-                break
+            if seq[l] == "*":
+                output.append(s)
+                s = ""
+                start = False
+                l = prev
             else:
-                temp += protDict[prot1[i:i+3]]
-                #print(protDict[prot1[i:i+3]], end = "")
-            i+=3     
-        else:
-            print("error seq not recognized")
-    j+=1
-    output.append(temp)
-    temp=""
+                s += seq[l]
+                l += 1
 
-for entry in output:
-    print(entry)
+#for each AA seq check for possible proteins
+for var in rnaprot:
+    orf_iter(var)
+#remove dups from output
+output = list(set(output))
+#print(output)
+
+for i in output:
+    print(i)
