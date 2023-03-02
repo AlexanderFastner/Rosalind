@@ -4,8 +4,9 @@
 
 #### IMPORTS
 import argparse
-import os
 import re
+import Bio
+from Bio import SeqIO
 ###
 
 #cmd line parser
@@ -20,32 +21,26 @@ with open(f, "r") as input:
     sequences = [line.strip() for line in input]
 input.close()
 
-result = [x for i, x in enumerate(sequences) if i % 2 == 1]
-#print(result)
-s = result[0]
-introns = result[1:]
+s = ""
+introns = []
+first = True
+#TODO read in fasta correctly
+#s for first sequence
+#introns as list of all other sequences
+for sequence in SeqIO.parse(f, "fasta"):
+    if first:
+        s = str(sequence.seq)
+        #print(s)
+        first = False
+    else:
+        #print(sequence.seq)
+        introns.append(str(sequence.seq))
 
-#print(s)
+print("original:  " + s)
 #find and remove introns from s
 for i in introns:
-    #print(i)
     s = re.sub(i, "", s)
-print(s)
-
-#get reverse complement
-# out = ""
-# for letter in s:
-#     if letter == "A":
-#         out += "T"
-#     if letter == "C":
-#         out += "G"
-#     if letter == "G":
-#         out += "C"
-#     if letter == "T":
-#         out += "A"
-# s = out
-# # s = s[::-1]
-# print(s)
+print("removed introns: " + s)
 
 #get RNA
 def get_rna(dna):
@@ -83,10 +78,10 @@ def rna2prot(seq):
     return o
 
 s = get_rna(s)
-print(s)
+print("final : " + s)
 s = rna2prot(s)[0]
 s = s.split("*")[0]
 #try cut from start to M
 s = "M" + s.split("M", 1)[1]
-
+print()
 print(s)
