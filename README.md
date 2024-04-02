@@ -1,11 +1,9 @@
 # Rosalind
 
-This is a repository containing my work on solving the Rosalind bioinformatics challenges.  
+This is a repository containing my work on solving the Rosalind bioinformatics challenges.
 
-You can see my progress here: html.Iframe(src=https://rosalind.info/users/Alex.Fastner/", height="500", width="100%", style={"border": "none"})
-
-
+You can see my progress here: [![Rosalind Progress](https://rosalind.info/users/Alex.Fastner/)](https://rosalind.info/users/Alex.Fastner/)
 
 ### My Current Ranking
 
-html.Iframe(src="https://rosalind.info/statistics/countries/de/", height="500", width="100%", style={"border": "none"})
+[![Rosalind Ranking](https://rosalind.info/statistics/countries/de/)](https://rosalind.info/statistics/countries/de/)
