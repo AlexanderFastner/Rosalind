@@ -30,7 +30,6 @@ for line in file:
 def get_overlap(s, l):
     if s in "":
         return l[0], l[1:]
-    
 
     #if first 50% is a substring of fused it is added
     for read in l:
